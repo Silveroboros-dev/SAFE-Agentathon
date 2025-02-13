@@ -14,7 +14,11 @@ In traditional models, businesses interact directly with consumers (B2C) or othe
 
 WIN addresses a key problem: *How can we harness AI’s speed and intelligence in Web3 without introducing new risks?* The solution is a framework where **SAFE smart accounts act as the trusted environment for AI**, providing programmable rules and multi-signature controls to keep agents in check even as they operate with a [high degree of independence​](safe.mirror.xyz)
 .
+
 ## How It Works: AI Agents within Safe Smart Accounts
+
+![Graph Description](./images/Marketing%20&%20Sales%20Workflow.png)
+
 WIN deploys four specialized AI agents within a Safe smart account, each with distinct roles that together handle end-to-end business processes in a decentralized manner. These agents operate collectively, governed by Safe’s smart account logic (multi-sig rules, modules, and guards), to ensure secure and efficient outcomes. The agents include:
 
 **TRAA (Trust & Risk Assessment Agent)** – Monitors transactions and decisions in real-time to enforce compliance and risk thresholds. Before any on-chain action is executed, TRAA evaluates its safety against business-defined policies. For example, if a payment exceeds a certain amount or a rule is violated, TRAA can flag or veto the transaction. This agent effectively acts as an on-chain risk manager, leveraging Safe’s capabilities (like Transaction Guards) to [prevent unauthorized or harmful operations](​safe.mirror.xyz).  By using Safe’s programmable guard hooks, TRAA ensures only vetted actions are executed, even if other agents propose them, adding a critical layer of trust.
