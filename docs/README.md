@@ -1,9 +1,16 @@
+<img src="./images/win_b.png" alt="Wired Intelligence Network" width="900" height="720">
+
 # SAFE-Agentathon
 ## WIN Project – AI Agents on SAFE Smart Accounts (SAFE Agentathon 2025)
 This project is created by [Wired Intelligence Network](https://win4.ai/) team (further WIN) exclusievly for SAFE Agentathon 2025. WIN is an innovative AI-driven automation project building for non-technical founders and industry experts. WIN showcases a new [B2A2X (Business-to-AI-to-Everything) business model](https://open.substack.com/pub/ruslankarmanny/p/the-allocative-revolution-why-b2a2x) , where a business delegates operations to autonomous AI agents that interact with any party or system on its behalf. By leveraging **SAFE’s smart account infrastructure**, WIN enables these agents to securely manage on-chain tasks and assets, addressing the challenge of trusting AI with real financial and data-driven decisions. The result is a framework that **streamlines business processes via AI agents** while maintaining blockchain-grade security and transparency.
+
+<img src="./images/logo.png" alt="Wired Intelligence Network" width="450" height="360">
+
 ## Introduction: The B2A2X Model and WIN’s Vision
 In traditional models, businesses interact directly with consumers (B2C) or other businesses (B2B). **B2A2X** represents a [paradigm shift: Business-to-AI-to-Everything](https://open.substack.com/pub/ruslankarmanny/p/the-allocative-revolution-why-b2a2x). In this model, a business (B) deploys AI **Agents (A)** that autonomously engage with any relevant party or service (X could be customers, markets, other businesses, etc.) to execute tasks. WIN demonstrates this vision by introducing AI agents as **autonomous intermediaries**. This approach can improve scalability (agents work 24/7), personalization (AI can tailor interactions per user), and efficiency (reducing manual oversight), all while ensuring the business retains control and oversight through Safe’s smart contract safeguards.
 [**WIN’s core vision**](https://win4.ai/) is to empower businesses to **trust AI agents with on-chain operations** without sacrificing security or privacy. By using Safe’s battle-tested smart accounts, WIN ensures that every agent action – whether making a payment, adjusting a contract, or analyzing data – occurs under strict conditions defined by the business. This alignment of AI autonomy with decentralized safety embodies [**SAFE’s own vision of an agent-driven blockchain economy​**](safe.mirror.xyz) safe.global. 
+
+<img src="./images/win_g.png" alt="Wired Intelligence Network" width="600" height="480">
 
 WIN addresses a key problem: *How can we harness AI’s speed and intelligence in Web3 without introducing new risks?* The solution is a framework where **SAFE smart accounts act as the trusted environment for AI**, providing programmable rules and multi-signature controls to keep agents in check even as they operate with a [high degree of independence​](safe.mirror.xyz)
 .
