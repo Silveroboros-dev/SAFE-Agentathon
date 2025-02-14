@@ -1,7 +1,7 @@
 ![alt text](./images/deg.png)
 
 
-Below is an integrated description of all four agents—including their individual policies—with CAPE (Centralized Adaptive Policy Engine) as the overseer that uses reinforcement learning (with verifiable feedback) to update policies. Each agent’s policy acts as an exogenous input to its peers, ensuring that risk assessments, liquidity management, and strategic decisions are transparent, adaptive, and aligned with overall performance. Human oversight remains integral when CAPE proposes policy changes.
+Below is an integrated description of all four agents—including their individual policies—with CAPE (Centralized Adaptive Policy Engine) as the overseer that uses reinforcement learning (with verifiable feedback) to update policies. Each agent's policy acts as an exogenous input to its peers, ensuring that risk assessments, liquidity management, and strategic decisions are transparent, adaptive, and aligned with overall performance. Human oversight remains integral when CAPE proposes policy changes.
 
 ---
 
@@ -9,6 +9,12 @@ Below is an integrated description of all four agents—including their individu
 
 **Role:**  
 Evaluates the risk of proposed transactions before execution using both on-chain data and oracle-verified news analysis.
+
+**Key Features:**
+- Integrated with high-risk approval workflow
+- Real-time risk assessment and monitoring
+- Multi-factor risk evaluation
+- Automated approval routing
 
 **Workflow:**
 - **Receive Proposals:**  
@@ -23,6 +29,11 @@ Evaluates the risk of proposed transactions before execution using both on-chain
   - Assesses market volatility, liquidity conditions, counterparty risks, and transaction sizes.
   - Evaluates news sentiment and market trends from oracle-verified sources.
   - Combines on-chain metrics with news-based risk indicators for comprehensive assessment.
+- **Risk-Based Approval Flow:**
+  - Determines risk level (LOW, MEDIUM, HIGH, CRITICAL)
+  - Routes high-risk decisions through approval workflow
+  - Creates detailed approval requests for human review
+  - Monitors approval status and expiration
 - **Preliminary Recommendation:**  
   - Issues an initial Approve/Reject/Modify recommendation along with a detailed justification.
   - Includes news-based insights and sentiment analysis in the recommendation.
@@ -36,13 +47,38 @@ Evaluates the risk of proposed transactions before execution using both on-chain
   - Establishes criteria for simulating transaction outcomes (e.g., gas cost limits, slippage margins).
   - Sets thresholds for news-based risk indicators and sentiment analysis.
   - Defines oracle data verification requirements and trust parameters.
+  - Specifies risk level thresholds and approval requirements:
+    - HIGH risk: Exposure ≥ 100,000 ETH
+    - CRITICAL risk: Exposure ≥ 500,000 ETH
+    - Additional factors: market volatility, credit rating, news sentiment
 - **Purpose:**  
   - Serves as the baseline decision-making framework for risk evaluation.
   - Provides exogenous feedback for both TLA (liquidity considerations) and SIA (strategic alignment).
   - Ensures reliable integration of news-based market intelligence.
+  - Manages approval workflow for high-risk decisions.
 - **Adaptation:**  
   - Updated periodically via CAPE's reinforcement learning process when performance data and external feedback indicate that adjustments would lead to improved outcomes.
   - Incorporates historical accuracy of news-based predictions in policy updates.
+  - Adjusts risk thresholds based on historical approval patterns.
+
+### Risk Assessment Interface
+```typescript
+interface RiskAssessment {
+    riskLevel: RiskLevel;
+    requiresApproval: boolean;
+    factors: {
+        exposureAmount: string;
+        marketVolatility: number;
+        creditRating: string;
+        newsSentiment: string;
+    };
+    recommendation: {
+        action: 'APPROVE' | 'REJECT' | 'NEEDS_APPROVAL';
+        reasoning: string;
+        approvalRequestId?: string;
+    };
+}
+```
 
 ### On-chain Functions
 ```typescript
@@ -52,6 +88,16 @@ async proposeRiskMitigation(
     recipientAddress: string,
     newsOracleData?: NewsAnalysis
 ): Promise<SafeTransaction>
+
+async assessRisk(
+    exposureData: ExposureData,
+    marketData: MarketData
+): Promise<RiskAssessment>
+
+async handleApprovalWorkflow(
+    assessment: RiskAssessment,
+    proposedAction: CounterpartyAction
+): Promise<void>
 ```
 
 ### Input Data Structure

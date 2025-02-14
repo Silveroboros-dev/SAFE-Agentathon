@@ -4,12 +4,15 @@ import { CAPEContract } from './CAPEContract'
 import { NewsFeedOracle } from './NewsFeedOracle'
 import { ExposureData, CounterpartyAction } from './types'
 import { promptManager } from './prompts'
+import { ApprovalWorkflow } from './ApprovalWorkflow'
+import { ApprovalStatus } from './types/approval'
 
 export class CounterpartyExposureAgent {
     private openai: OpenAI
     private capeContract: CAPEContract
     private limitsContract: string
     private newsFeedOracle: NewsFeedOracle
+    private approvalWorkflow: ApprovalWorkflow
 
     constructor(
         signer: ethers.Signer,
@@ -29,12 +32,26 @@ export class CounterpartyExposureAgent {
             signer,
             openaiApiKey
         )
+        this.approvalWorkflow = new ApprovalWorkflow()
     }
 
     async initialize(safeAddress?: string) {
         await this.capeContract.initialize(safeAddress)
     }
 
+    /**
+     * Assesses counterparty exposure and determines appropriate actions
+     * 
+     * For high-risk decisions, this method will:
+     * 1. Create an approval request
+     * 2. Throw an error with the request ID
+     * 3. Prevent execution until approved
+     * 
+     * @param exposureData - Data about the counterparty exposure
+     * @param humanFeedback - Optional feedback from human operators
+     * @returns The proposed action
+     * @throws Error if approval is required, including the request ID
+     */
     async assessExposure(
         exposureData: ExposureData, 
         humanFeedback?: {
@@ -63,12 +80,52 @@ export class CounterpartyExposureAgent {
             })
 
             const analysis = JSON.parse(completion.choices[0].message.content)
+            
+            // Check if approval is required
+            const riskLevel = this.approvalWorkflow.determineRiskLevel(exposureData)
+            if (this.approvalWorkflow.requiresApproval(riskLevel)) {
+                const approvalRequest = await this.approvalWorkflow.createApprovalRequest(
+                    exposureData,
+                    analysis
+                )
+                throw new Error(`High-risk decision requires approval. Request ID: ${approvalRequest.id}`)
+            }
+
             await this.executeExposureAction(analysis)
             return analysis
         } catch (error) {
             console.error('Exposure assessment failed:', error)
             throw error
         }
+    }
+
+    /**
+     * Executes an action that has been approved through the approval workflow
+     * 
+     * @param approvalRequestId - ID of the approved request
+     * @throws Error if request not found or not approved
+     */
+    async executeApprovedAction(approvalRequestId: string): Promise<void> {
+        const request = this.approvalWorkflow.getApprovalRequest(approvalRequestId)
+        
+        if (!request) {
+            throw new Error(`Approval request ${approvalRequestId} not found`)
+        }
+
+        if (request.status !== ApprovalStatus.APPROVED) {
+            throw new Error(`Cannot execute action. Request status: ${request.status}`)
+        }
+
+        await this.executeExposureAction(request.proposedAction)
+    }
+
+    /**
+     * Gets all currently pending approval requests
+     * 
+     * @returns Array of pending approval requests
+     */
+    getPendingApprovals(): any[] {
+        return this.approvalWorkflow.getPendingApprovals()
     }
 
     private formatExposurePrompt(
