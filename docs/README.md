@@ -47,13 +47,14 @@ Interested in exploring or demoing [WIN](https://win4.ai/)? Here’s a brief gui
    - If using code, you can use the Safe Protocol Kit to deploy a new SAFE contract with a given owner. (See SAFE’s docs for code snippets on initializing a SAFE client and deploying [a SAFE account]​(docs.safe.global).)
    - Note: A 1-of-1 setup (one agent controls the SAFE) is the simplest, but not the most secure – in a real scenario, you might use a 2-of-3 or 2-of-4 multi-sig among agents and a human, etc., as **described in SAFE’s [multi-agent setup guide​](docs.safe.global)**. For hackathon purposes, start simple, then iterate.
 
-4.**Configure Agent Credentials:** Each [WIN](https://win4.ai/) agent (TRAA, TLA, SIA, CAPE) will need access to a signing key or Safe transaction service to act on the SAFE. In a test setup, these can be represented by separate scripts or processes. You should:
+4. **Configure Agent Credentials:** Each [WIN](https://win4.ai/) agent (TRAA, TLA, SIA, CAPE) will need access to a signing key or Safe transaction service to act on the SAFE. In a test setup, these can be represented by separate scripts or processes. You should:
 
   - Create or obtain private keys for each agent (or generate burner keys on testnet).
   - Fund the SAFE with some test ETH (for gas) and any tokens needed for the demo.
   - Update the project’s configuration (maybe a .env file or config files) to include the SAFE contract address and the keys of the agents. The code is structured to load these and instantiate agent clients.
 
-5.**Run the WIN Agents:** Start the agents in the appropriate order. For example:
+5. **Run the WIN Agents:** Start the agents in the appropriate order. For example:
+   
 - Launch the **TRAA** process to begin monitoring (it will listen for proposed transactions).
 - Launch **TLA** and **SIA** which might initiate actions (TLA performing periodic optimizations, SIA listening for external triggers or user input).
 - Finally, launch **CAPE**, which will orchestrate a higher-level scenario (for instance, executing a sample workflow where the agents collaborate).
