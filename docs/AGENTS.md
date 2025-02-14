@@ -36,8 +36,58 @@ Evaluates the risk of proposed transactions before execution.
 - **Adaptation:**  
   - Updated periodically via CAPE’s reinforcement learning process when performance data and external feedback indicate that adjustments would lead to improved outcomes.
 
----
+### On-chain Functions
+```typescript
+async proposeRiskMitigation(
+    asset: string,
+    amount: string,
+    recipientAddress: string
+): Promise<SafeTransaction>
+```
 
+### Input Data Structure
+```typescript
+interface MarketData {
+    asset: string;
+    currentPrice: string;
+    priceChange24h: number;
+    volatility30d: number;
+    volume24h: string;
+    currentExposure: string;
+}
+```
+
+### Sample OpenAI Prompt
+```
+Analyze the following market conditions and provide a risk assessment:
+
+Market Data:
+- Asset: ${marketData.asset}
+- Current Price: ${marketData.currentPrice}
+- 24h Price Change: ${marketData.priceChange24h}%
+- 30-day Volatility: ${marketData.volatility30d}
+- Trading Volume: ${marketData.volume24h}
+- Current Exposure: ${marketData.currentExposure}
+
+Risk Limits:
+- Maximum Exposure: ${maxExposure}
+- VaR Limit: ${varLimit}
+- Volatility Threshold: ${volatilityThreshold}
+```
+
+### Expected AI Response Structure
+```json
+{
+    "valueAtRisk": 120000,
+    "volatility": 0.45,
+    "exposure": 1000000,
+    "breachesLimit": true,
+    "recommendedAction": "reduce_position",
+    "suggestedReduction": 200000,
+    "confidence": 0.95
+}
+```
+---
 ## 2. Treasury & Liquidity Agent (TLA)
 
 **Role:**  
@@ -70,6 +120,31 @@ Manages the Safe’s liquidity to ensure transactions are executed without jeopa
 - **Adaptation:**  
   - Subject to periodic updates via CAPE’s RL process, which factors in historical liquidity performance and real-world outcomes to optimize liquidity management.
 
+### On-chain Functions
+```typescript
+async proposeSettlement(
+    tradeId: string,
+    amount: string,
+    counterparty: string
+): Promise<SafeTransaction>
+
+async lockCollateral(
+    amount: string,
+    escrowContract: string
+): Promise<SafeTransaction>
+```
+
+### Input Data Structure
+```typescript
+interface TradeLifecycleData {
+    tradeId: string;
+    eventType: 'initiation' | 'settlement' | 'maturity' | 'default';
+    settlementAmount: string;
+    counterparty: string;
+    requiredCollateral: string;
+    status: 'pending' | 'active' | 'settling' | 'completed' | 'defaulted';
+}
+```
 ---
 
 ## 3. Strategic Investment Agent (SIA)
@@ -105,6 +180,35 @@ Defines and maintains the long-term investment strategy and portfolio allocation
 - **Adaptation:**  
   - Continuously refined by CAPE using reinforcement learning, based on verifiable portfolio performance data and external market conditions.
 
+### On-chain Functions
+```typescript
+async proposeInvestment(
+    asset: string,
+    amount: string,
+    isEntry: boolean
+): Promise<SafeTransaction>
+
+async proposeHedge(
+    hedgeContract: string,
+    amount: string,
+    direction: 'long' | 'short'
+): Promise<SafeTransaction>
+```
+
+### Sample OpenAI Prompt
+```
+Analyze these market and portfolio conditions:
+
+Market Conditions:
+- Market Trend: ${strategyData.marketTrend}
+- Volatility Index: ${strategyData.volatilityIndex}
+- Interest Rates: ${strategyData.interestRates}
+
+Portfolio Status:
+- Current Allocation: ${JSON.stringify(strategyData.currentAllocation)}
+- Performance: ${strategyData.performance}
+- Risk Metrics: ${JSON.stringify(strategyData.riskMetrics)}
+```
 ---
 
 ## 4. CAPE – Centralized Adaptive Policy Engine
@@ -138,6 +242,33 @@ Serves as the central communication and policy update hub, owning the policies o
   - Continuously learns from operational outcomes, historical data, and external inputs.
   - Employs transparent, verifiable RL techniques to update and disseminate policy adjustments across the system.
 
+### On-chain Functions
+```typescript
+async requestCollateralCall(
+    counterparty: string,
+    amount: string,
+    deadline: number
+): Promise<SafeTransaction>
+
+async updateCounterpartyLimits(
+    limitsContract: string,
+    counterparty: string,
+    newLimit: string
+): Promise<SafeTransaction>
+```
+
+### Input Data Structure
+```typescript
+interface ExposureData {
+    counterpartyId: string;
+    creditRating: string;
+    currentExposure: string;
+    exposureLimit: string;
+    collateralHeld: string;
+    netPosition: string;
+    marketVolatility: number;
+}
+```
 ---
 
 ## Overall Agent Interactions & Workflow
@@ -159,5 +290,40 @@ Serves as the central communication and policy update hub, owning the policies o
    - Each agent integrates policy updates received from CAPE into their decision-making processes.
    - CAPE’s RL model continuously refines policies based on verifiable, auditable feedback from the overall system performance.
 
+### AI Response Mapping
+The AI's recommendations are mapped to on-chain actions as follows:
+
+1. Collateral Calls
+```json
+{
+    "collateralAction": {
+        "action": "request_collateral",
+        "amount": "100000",
+        "deadline": 86400,
+        "reason": "Exposure limit breach"
+    }
+}
+```
+Maps to: `requestCollateralCall(counterparty, amount, deadline)`
+
+2. Exposure Adjustments
+```json
+{
+    "exposureAction": {
+        "action": "reduce_exposure",
+        "amount": "50000",
+        "asset": "0x...",
+        "timeline": "immediate"
+    }
+}
+```
+Maps to: `reduceExposure(counterparty, amount, asset)`
+
 
 This unified framework ensures that each agent operates with a clear, exogenously defined policy, while CAPE continuously refines these policies using reinforcement learning and verifiable feedback. The approach guarantees that transaction risks, liquidity constraints, and strategic objectives are balanced in a transparent, adaptive, and auditable manner—with human oversight when key policy changes are proposed....
+
+
+
+
+
+
