@@ -1,4 +1,4 @@
-![alt text](https://github.com/Silveroboros-dev/SAFE-Agentathon/blob/feature_media/docs/images/deg.png)
+![alt text](./images/deg.png)
 
 
 Below is an integrated description of all four agents—including their individual policies—with CAPE (Centralized Adaptive Policy Engine) as the overseer that uses reinforcement learning (with verifiable feedback) to update policies. Each agent’s policy acts as an exogenous input to its peers, ensuring that risk assessments, liquidity management, and strategic decisions are transparent, adaptive, and aligned with overall performance. Human oversight remains integral when CAPE proposes policy changes.
