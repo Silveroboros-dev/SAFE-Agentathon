@@ -65,7 +65,7 @@ The exact processes/commands will depend on how we implemented the agents (refer
 
 **Further Configuration:** Explore SAFE’s docs to add more advanced features:
 
-- Set up a Transaction Guard contract on the SAFE to define explicit [allowed agent actions​](safe.mirror.xyz).
+- Set up a Transaction Guard contract on the SAFE to define explicit [allowed agent actions​](https://safe.mirror.xyz/V965PykKzlE1PCuWxBjsCJR12WscLcnMxuvR9E9bP-Y#:~:text=Transaction%20Guards%20are%20another%20feature,to%20performing%20only%20specific%20transactions).
 - Add a human owner with a 2-of-2 requirement for very large transactions (demonstrating human-in-the-loop control).
 - Use SAFE Modules like a Spending Limit module to cap the daily token spend of the SAFE, regardless of agent activity​. These steps are optional but showcase how flexible SAFE is in customizing the AI agent’s operating envelope.
   
