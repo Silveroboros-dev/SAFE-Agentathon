@@ -2,6 +2,7 @@ import { ethers } from 'ethers'
 import OpenAI from 'openai'
 import axios from 'axios'
 import { NewsItem, NewsAnalysis } from './types'
+import { promptManager } from './prompts'
 
 export class NewsFeedOracle {
     private openai: OpenAI
@@ -87,47 +88,30 @@ export class NewsFeedOracle {
     }
 
     private async analyzeNews(news: NewsItem[]): Promise<NewsAnalysis> {
-        if (news.length === 0) {
+        try {
+            const completion = await this.openai.chat.completions.create({
+                ...promptManager.getParameters('news'),
+                messages: [
+                    {
+                        role: "system",
+                        content: promptManager.getSystemPrompt('news')
+                    },
+                    {
+                        role: "user",
+                        content: JSON.stringify(news)
+                    }
+                ]
+            })
+
+            const analysis = JSON.parse(completion.choices[0].message.content)
             return {
-                sentiment: 'neutral',
-                riskLevel: 'low',
-                keyInsights: ['No recent news available'],
+                ...analysis,
                 timestamp: Math.floor(Date.now() / 1000),
                 exists: true
             }
-        }
-
-        const newsContent = news.map(item => 
-            `${item.title}\n${item.description || ''}`
-        ).join('\n\n')
-
-        const completion = await this.openai.chat.completions.create({
-            model: "gpt-4-turbo-preview",
-            messages: [
-                {
-                    role: "system",
-                    content: `Analyze the following news articles for counterparty risk assessment. 
-                    Focus on financial health, market position, regulatory issues, and business stability. 
-                    Provide analysis in JSON format with the following structure:
-                    {
-                        "sentiment": "positive|negative|neutral",
-                        "riskLevel": "low|medium|high",
-                        "keyInsights": ["insight1", "insight2", ...]
-                    }`
-                },
-                {
-                    role: "user",
-                    content: newsContent
-                }
-            ],
-            response_format: { type: "json_object" }
-        })
-
-        const analysis = JSON.parse(completion.choices[0].message.content)
-        return {
-            ...analysis,
-            timestamp: Math.floor(Date.now() / 1000),
-            exists: true
+        } catch (error) {
+            console.error('Failed to analyze news:', error)
+            throw error
         }
     }
 }

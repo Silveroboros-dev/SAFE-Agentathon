@@ -2,6 +2,7 @@ import OpenAI from 'openai'
 import { ethers } from 'ethers'
 import { SIAContract } from './SIAContract'
 import { StrategyData, InvestmentAction } from './types'
+import { promptManager } from './prompts'
 
 export class StrategicInvestmentAgent {
     private openai: OpenAI
@@ -27,21 +28,17 @@ export class StrategicInvestmentAgent {
     async assessStrategy(strategyData: StrategyData): Promise<InvestmentAction> {
         try {
             const completion = await this.openai.chat.completions.create({
-                model: "gpt-4-turbo-preview",
+                ...promptManager.getParameters('sia'),
                 messages: [
                     {
                         role: "system",
-                        content: `You are a strategic investment analysis system. 
-                        Evaluate market conditions, portfolio metrics, and macroeconomic 
-                        factors to recommend investment actions. Consider hedging needs 
-                        and risk-adjusted returns. Provide recommendations in JSON format.`
+                        content: promptManager.getSystemPrompt('sia')
                     },
                     {
                         role: "user",
                         content: this.formatStrategyPrompt(strategyData)
                     }
-                ],
-                response_format: { type: "json_object" }
+                ]
             })
 
             const analysis = JSON.parse(completion.choices[0].message.content)

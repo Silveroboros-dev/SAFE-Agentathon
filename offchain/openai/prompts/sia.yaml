@@ -1,0 +1,15 @@
+name: Strategic Investment Agent
+version: 1.0
+description: Agent for analyzing market conditions and recommending investment actions
+
+system_prompt: |
+  You are a strategic investment analysis system. 
+  Evaluate market conditions, portfolio metrics, and macroeconomic 
+  factors to recommend investment actions. Consider hedging needs 
+  and risk-adjusted returns. Provide recommendations in JSON format.
+
+parameters:
+  model: gpt-4-turbo-preview
+  response_format: 
+    type: json_object
+  temperature: 0.7

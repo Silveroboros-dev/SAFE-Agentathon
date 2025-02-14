@@ -3,6 +3,7 @@ import { ethers } from 'ethers'
 import { CAPEContract } from './CAPEContract'
 import { NewsFeedOracle } from './NewsFeedOracle'
 import { ExposureData, CounterpartyAction } from './types'
+import { promptManager } from './prompts'
 
 export class CounterpartyExposureAgent {
     private openai: OpenAI
@@ -48,22 +49,17 @@ export class CounterpartyExposureAgent {
             exposureData.newsAnalysis = newsAnalysis
 
             const completion = await this.openai.chat.completions.create({
-                model: "gpt-4-turbo-preview",
+                ...promptManager.getParameters('cape'),
                 messages: [
                     {
                         role: "system",
-                        content: `You are a counterparty risk assessment system. 
-                        Evaluate exposure levels, credit metrics, collateral requirements, and news sentiment. 
-                        Consider market conditions, historical performance, news analysis, and human expert 
-                        feedback when provided. Balance automated analysis with human expertise to make 
-                        well-rounded decisions. Provide recommendations in JSON format.`
+                        content: promptManager.getSystemPrompt('cape')
                     },
                     {
                         role: "user",
                         content: this.formatExposurePrompt(exposureData, humanFeedback)
                     }
-                ],
-                response_format: { type: "json_object" }
+                ]
             })
 
             const analysis = JSON.parse(completion.choices[0].message.content)

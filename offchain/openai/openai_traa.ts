@@ -2,6 +2,7 @@ import OpenAI from 'openai'
 import { ethers } from 'ethers'
 import { TRAAContract } from './TRAAContract'
 import { MarketData, RiskAssessment } from './types'
+import { promptManager } from './prompts'
 
 export class TradeRiskAssessmentAgent {
     private openai: OpenAI
@@ -35,19 +36,17 @@ export class TradeRiskAssessmentAgent {
     async assessRisk(marketData: MarketData): Promise<RiskAssessment> {
         try {
             const completion = await this.openai.chat.completions.create({
-                model: "gpt-4-turbo-preview",
+                ...promptManager.getParameters('traa'),
                 messages: [
                     {
                         role: "system",
-                        content: `You are a risk assessment system analyzing market data and suggesting actions. 
-                        Provide risk metrics and clear recommendations in JSON format.`
+                        content: promptManager.getSystemPrompt('traa')
                     },
                     {
                         role: "user",
                         content: this.formatMarketDataPrompt(marketData)
                     }
-                ],
-                response_format: { type: "json_object" }
+                ]
             })
 
             const analysis = JSON.parse(completion.choices[0].message.content)
