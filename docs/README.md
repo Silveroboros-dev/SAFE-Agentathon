@@ -44,8 +44,8 @@ Interested in exploring or demoing [WIN](https://win4.ai/)? Here’s a brief gui
 
 3. **SAFE Smart Account Setup:** Create a SAFE smart account for the AI agents. You can do this via the SAFE web interface or programmatically. For a simple demo, you might start with a 1-of-1 SAFE (the AI agent as the sole owner) to mimic an [autonomous agent account​](docs.safe.global). SAFE provides a quickstart guide **to equip an AI agent with a [SAFE account​](docs.safe.global)**. In our case, you would set the owner(s) of the Safe to keys controlled by the WIN agents (which can be simulated by scripts or processes running locally).
    
-   - If using code, you can use the Safe Protocol Kit to deploy a new SAFE contract with a given owner. (See SAFE’s docs for code snippets on initializing a SAFE client and deploying [a SAFE account]​(docs.safe.global).)
-   - Note: A 1-of-1 setup (one agent controls the SAFE) is the simplest, but not the most secure – in a real scenario, you might use a 2-of-3 or 2-of-4 multi-sig among agents and a human, etc., as **described in SAFE’s [multi-agent setup guide​](docs.safe.global)**. For hackathon purposes, start simple, then iterate.
+   - If using code, you can use the Safe Protocol Kit to deploy a new SAFE contract with a given owner. (See SAFE’s docs for code snippets on initializing a SAFE client and deploying [a SAFE account](https://docs.safe.global/home/ai-agent-quickstarts/basic-agent-setup).)
+   - Note: A 1-of-1 setup (one agent controls the SAFE) is the simplest, but not the most secure – in a real scenario, you might use a 2-of-3 or 2-of-4 multi-sig among agents and a human, etc., as **described in SAFE’s [multi-agent setup guide​](https://docs.safe.global)**. For hackathon purposes, start simple, then iterate.
 
 4. **Configure Agent Credentials:** Each [WIN](https://win4.ai/) agent (TRAA, TLA, SIA, CAPE) will need access to a signing key or Safe transaction service to act on the SAFE. In a test setup, these can be represented by separate scripts or processes. You should:
 
@@ -67,9 +67,9 @@ The exact processes/commands will depend on how we implemented the agents (refer
 
 - Set up a Transaction Guard contract on the SAFE to define explicit [allowed agent actions​](safe.mirror.xyz).
 - Add a human owner with a 2-of-2 requirement for very large transactions (demonstrating human-in-the-loop control).
-- Use SAFE Modules like a Spending Limit module to cap the daily token spend of the SAFE, regardless of [agent activity​](docs.safe.global). These steps are optional but showcase how flexible SAFE is in customizing the AI agent’s operating envelope.
+- Use SAFE Modules like a Spending Limit module to cap the daily token spend of the SAFE, regardless of agent activity​. These steps are optional but showcase how flexible SAFE is in customizing the AI agent’s operating envelope.
   
-For more details on setting up SAFE smart accounts and integrating AI, refer to Safe’s official documentation: *[“Basic setup to equip your AI agent with a Smart Account”​](docs.safe.global)* and the SAFE AI Agents resource hub. SAFE’s docs also cover **multiple agent setups, human approval flows, and other advanced patterns** that can [enhance WIN’s framework​](docs.safe.global).
+For more details on setting up SAFE smart accounts and integrating AI, refer to Safe’s official documentation: *[“Basic setup to equip your AI agent with a Smart Account”​](https://docs.safe.global/advanced/smart-account-modules))* and the SAFE AI Agents resource hub. SAFE’s docs also cover **multiple agent setups, human approval flows, and other advanced patterns** that can [enhance WIN’s framework​](https://docs.safe.global/home/ai-agent-quickstarts/basic-agent-setup).
 
 *If you encounter issues during setup, please check the repository’s Wiki/Issues for troubleshooting tips or reach out on the Safe community Discord.*
 
