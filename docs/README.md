@@ -1,4 +1,4 @@
-![Head](./images/Print_Transparent.svg)
+![Head](./images/win_b.png)
 
 # SAFE-Agentathon
 
