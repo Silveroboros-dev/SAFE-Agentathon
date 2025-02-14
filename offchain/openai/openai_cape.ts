@@ -1,23 +1,33 @@
 import OpenAI from 'openai'
 import { ethers } from 'ethers'
 import { CAPEContract } from './CAPEContract'
+import { NewsFeedOracle } from './NewsFeedOracle'
 import { ExposureData, CounterpartyAction } from './types'
 
 export class CounterpartyExposureAgent {
     private openai: OpenAI
     private capeContract: CAPEContract
     private limitsContract: string
+    private newsFeedOracle: NewsFeedOracle
 
     constructor(
         signer: ethers.Signer,
         openaiApiKey: string,
-        limitsContract: string
+        limitsContract: string,
+        newsFeedOracleAddress: string,
+        newsFeedOracleABI: ethers.ContractInterface
     ) {
         this.openai = new OpenAI({
             apiKey: openaiApiKey
         })
         this.capeContract = new CAPEContract(signer)
         this.limitsContract = limitsContract
+        this.newsFeedOracle = new NewsFeedOracle(
+            newsFeedOracleAddress,
+            newsFeedOracleABI,
+            signer,
+            openaiApiKey
+        )
     }
 
     async initialize(safeAddress?: string) {
@@ -33,16 +43,19 @@ export class CounterpartyExposureAgent {
         }
     ): Promise<CounterpartyAction> {
         try {
+            // Get latest news analysis from oracle
+            const newsAnalysis = await this.newsFeedOracle.getNewsAnalysis(exposureData.counterpartyId)
+            exposureData.newsAnalysis = newsAnalysis
+
             const completion = await this.openai.chat.completions.create({
                 model: "gpt-4-turbo-preview",
                 messages: [
                     {
                         role: "system",
                         content: `You are a counterparty risk assessment system. 
-                        Evaluate exposure levels, credit metrics, and collateral 
-                        requirements. Consider market conditions, historical 
-                        performance, and human expert feedback when provided. 
-                        Balance automated analysis with human expertise to make 
+                        Evaluate exposure levels, credit metrics, collateral requirements, and news sentiment. 
+                        Consider market conditions, historical performance, news analysis, and human expert 
+                        feedback when provided. Balance automated analysis with human expertise to make 
                         well-rounded decisions. Provide recommendations in JSON format.`
                     },
                     {
@@ -87,6 +100,11 @@ export class CounterpartyExposureAgent {
         - Market Volatility: ${exposureData.marketVolatility}
         - Sector Performance: ${exposureData.sectorPerformance}
         - Credit Spreads: ${exposureData.creditSpreads}
+
+        News Analysis:
+        - Sentiment: ${exposureData.newsAnalysis?.sentiment || 'No data'}
+        - Risk Level from News: ${exposureData.newsAnalysis?.riskLevel || 'No data'}
+        - Key Insights: ${exposureData.newsAnalysis?.keyInsights?.join(', ') || 'No data'}
         `
 
         if (humanFeedback) {

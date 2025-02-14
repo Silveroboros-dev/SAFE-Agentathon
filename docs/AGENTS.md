@@ -8,7 +8,7 @@ Below is an integrated description of all four agents—including their individu
 ## 1. Transaction Risk Assessor Agent (TRAA)
 
 **Role:**  
-Evaluates the risk of proposed transactions before execution.
+Evaluates the risk of proposed transactions before execution using both on-chain data and oracle-verified news analysis.
 
 **Workflow:**
 - **Receive Proposals:**  
@@ -16,12 +16,16 @@ Evaluates the risk of proposed transactions before execution.
 - **Data Acquisition:**  
   - **Market Data:** Integrates directly with on-chain oracles (e.g., Chainlink) and, if needed, off-chain APIs.  
   - **Liquidity Data:** Directly queries on-chain sources (e.g., DEX pool sizes) and off-chain order books.  
-  - **Counterparty Risk:** Retrieves smart contract audit records, reputations, and decentralized risk scores via direct API/on-chain queries.
+  - **News Data:** Fetches and analyzes news through Chainlink oracle network for real-time market sentiment and risk assessment.
+  - **Counterparty Risk:** Retrieves smart contract audit records, reputations, decentralized risk scores, and oracle-verified news sentiment.
 - **Risk Analysis:**  
   - Simulates transactions using Safe{Core} to estimate gas costs and potential slippage.  
   - Assesses market volatility, liquidity conditions, counterparty risks, and transaction sizes.
+  - Evaluates news sentiment and market trends from oracle-verified sources.
+  - Combines on-chain metrics with news-based risk indicators for comprehensive assessment.
 - **Preliminary Recommendation:**  
   - Issues an initial Approve/Reject/Modify recommendation along with a detailed justification.
+  - Includes news-based insights and sentiment analysis in the recommendation.
 - **Feedback Integration:**  
   - Receives liquidity feedback from TLA and strategic alignment feedback from SIA.
   - Incorporates aggregated insights from CAPE before finalizing recommendations.
@@ -30,18 +34,23 @@ Evaluates the risk of proposed transactions before execution.
 - **Content:**  
   - Defines thresholds for acceptable market volatility, transaction size limits, maximum allowable slippage, and counterparty risk parameters.
   - Establishes criteria for simulating transaction outcomes (e.g., gas cost limits, slippage margins).
+  - Sets thresholds for news-based risk indicators and sentiment analysis.
+  - Defines oracle data verification requirements and trust parameters.
 - **Purpose:**  
   - Serves as the baseline decision-making framework for risk evaluation.
   - Provides exogenous feedback for both TLA (liquidity considerations) and SIA (strategic alignment).
+  - Ensures reliable integration of news-based market intelligence.
 - **Adaptation:**  
-  - Updated periodically via CAPE’s reinforcement learning process when performance data and external feedback indicate that adjustments would lead to improved outcomes.
+  - Updated periodically via CAPE's reinforcement learning process when performance data and external feedback indicate that adjustments would lead to improved outcomes.
+  - Incorporates historical accuracy of news-based predictions in policy updates.
 
 ### On-chain Functions
 ```typescript
 async proposeRiskMitigation(
     asset: string,
     amount: string,
-    recipientAddress: string
+    recipientAddress: string,
+    newsOracleData?: NewsAnalysis
 ): Promise<SafeTransaction>
 ```
 
@@ -54,6 +63,12 @@ interface MarketData {
     volatility30d: number;
     volume24h: string;
     currentExposure: string;
+    newsAnalysis?: {
+        sentiment: 'positive' | 'negative' | 'neutral';
+        riskLevel: 'low' | 'medium' | 'high';
+        keyInsights: string[];
+        timestamp: number;
+    }
 }
 ```
 
@@ -68,6 +83,12 @@ Market Data:
 - 30-day Volatility: ${marketData.volatility30d}
 - Trading Volume: ${marketData.volume24h}
 - Current Exposure: ${marketData.currentExposure}
+
+News Analysis (Oracle-Verified):
+- Market Sentiment: ${marketData.newsAnalysis?.sentiment || 'No data'}
+- Risk Level: ${marketData.newsAnalysis?.riskLevel || 'No data'}
+- Key Insights: ${marketData.newsAnalysis?.keyInsights?.join(', ') || 'No data'}
+- Last Updated: ${new Date(marketData.newsAnalysis?.timestamp * 1000).toISOString() || 'No data'}
 
 Risk Limits:
 - Maximum Exposure: ${maxExposure}
@@ -84,7 +105,16 @@ Risk Limits:
     "breachesLimit": true,
     "recommendedAction": "reduce_position",
     "suggestedReduction": 200000,
-    "confidence": 0.95
+    "confidence": 0.95,
+    "newsBasedRisk": {
+        "level": "medium",
+        "factors": [
+            "Recent negative press coverage",
+            "Regulatory concerns in news"
+        ],
+        "oracleVerified": true,
+        "lastUpdated": "2025-02-14T15:32:57Z"
+    }
 }
 ```
 ---
@@ -320,10 +350,4 @@ Maps to: `requestCollateralCall(counterparty, amount, deadline)`
 Maps to: `reduceExposure(counterparty, amount, asset)`
 
 
-This unified framework ensures that each agent operates with a clear, exogenously defined policy, while CAPE continuously refines these policies using reinforcement learning and verifiable feedback. The approach guarantees that transaction risks, liquidity constraints, and strategic objectives are balanced in a transparent, adaptive, and auditable manner—with human oversight when key policy changes are proposed....
-
-
-
-
-
-
+This unified framework ensures that each agent operates with a clear, exogenously defined policy, while CAPE continuously refines these policies using reinforcement learning and verifiable feedback. The approach guarantees that transaction risks, liquidity constraints, and strategic objectives are balanced in a transparent, adaptive, and auditable manner—with human oversight when key policy changes are proposed.
